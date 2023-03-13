@@ -1,4 +1,4 @@
-FROM maven:3.6.3-jdk-8 AS build-env
+FROM maven:3.6.3-jdk-11 AS build-env
 WORKDIR /app
 
 COPY pom.xml ./
@@ -9,7 +9,7 @@ COPY . ./
 RUN mvn spring-javaformat:apply
 RUN mvn package -DfinalName=application
 
-FROM openjdk:8-jre-alpine
+FROM openjdk:11
 EXPOSE 8080
 WORKDIR /app
 
