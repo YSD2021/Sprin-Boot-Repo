@@ -1,49 +1,19 @@
-#### Stage 1: Build the application
-FROM openjdk:8-jdk as build
-
-# Set the current working directory inside the image
+FROM maven:3.6.3-jdk-8 AS build-env
 WORKDIR /app
 
-# Copy maven executable to the image
-COPY mvnw .
-COPY .mvn .mvn
+COPY pom.xml ./
+RUN mvn dependency:go-offline
+RUN mvn spring-javaformat:help
 
-# COPY THE JSON and WebPack files
-COPY package.json .
-COPY webpack.config.js .
+COPY . ./
+RUN mvn spring-javaformat:apply
+RUN mvn package -DfinalName=application
 
-# Copy the pom.xml file
-COPY pom.xml .
-
-# Build all the dependencies in preparation to go offline. 
-# This is a separate step so the dependencies will be cached unless 
-# the pom.xml file has changed.
-RUN chmod +x mvnw
-RUN ./mvnw dependency:go-offline -B
-
-# Copy the project source
-COPY src/main src/main
-
-# Package the application
-RUN ./mvnw package -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
-
-# Start with a base image containing Java runtime
-FROM openjdk:11
-
-# Add a volume pointing to /tmp
-WORKDIR /app
-
-# Make port 8080 available to the world outside this container
+FROM openjdk:8-jre-alpine
 EXPOSE 8080
+WORKDIR /app
 
-# The application's jar file
-ARG JAR_FILE=target/dependency/react-and-spring-data-rest-0.0.1-SNAPSHOT.jar
-
-# Add the application's jar to the container
-ADD ${JAR_FILE} application.jar
-
-# Run the jar file 
-ENTRYPOINT ["java","-jar","/application.jar"]
+COPY --from=build-env /app/target/application.jar ./application.jar
+CMD ["/usr/bin/java", "-jar", "/app/application.jar"]
 
 
