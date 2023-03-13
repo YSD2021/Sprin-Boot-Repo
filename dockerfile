@@ -6,7 +6,7 @@ RUN mvn dependency:go-offline
 RUN mvn spring-javaformat:help
 
 COPY . ./
-RUN mvn spring-javaformat:apply
+RUN ./mvnw package -DskipTests
 RUN mvn package -DfinalName=application
 
 FROM openjdk:11
