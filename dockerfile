@@ -38,7 +38,7 @@ WORKDIR /app
 EXPOSE 8080
 
 # The application's jar file
-ARG JAR_FILE=target/react-and-spring-data-rest-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=target/dependency/react-and-spring-data-rest-0.0.1-SNAPSHOT.jar
 
 # Add the application's jar to the container
 ADD ${JAR_FILE} application.jar
