@@ -35,7 +35,7 @@ FROM openjdk:11
 EXPOSE 8080
 WORKDIR /app
 
-COPY --from=build-env /app/target/application.jar ./application.jar
+COPY --from=build /app/target/application.jar ./application.jar
 CMD ["/usr/bin/java", "-jar", "/app/application.jar"]
 
 
